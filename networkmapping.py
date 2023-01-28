@@ -140,23 +140,16 @@ def main():
                             default is data/surfaces/92ktemplate.dtseries.nii''', dest = 'wb_required_template_path')
     args = arg_parser.parse_args()
 
-    regularized_dt_path = args.regularized_dt_path
-    net_template_path = args.net_template_path
-    wb_required_template_path = args.wb_required_template_path
-    skip_cleanup = args.skip_cleanup
-    output_name = args.output_name
-    output_dir = args.output_dir
-
-    final_path = os.path.join(output_dir,output_name)+'.dtseries.nii'
-    net_template_data = load_nii(net_template_path)
-    regularized_dtseries = load_nii(regularized_dt_path)
+    final_path = os.path.join(args.output_dir,args.output_name)+'.dtseries.nii'
+    net_template_data = load_nii(args.net_template_path)
+    regularized_dtseries = load_nii(args.regularized_dt_path)
     template_cortex = net_template_data[0:59412]
     regularized_dtseries_cortex = regularized_dtseries[0:59412,:]
     out_map_colored_single = sparsest_template_match(regularized_dtseries_cortex, template_cortex)
-    save_nii(out_map_colored_single, output_name, output_dir, wb_required_template_path)
+    save_nii(out_map_colored_single, args.output_name, args.output_dir, args.wb_required_template_path)
 
-    if skip_cleanup == False:
-        regularized_dt_path_mat_input = os.path.join('..',regularized_dt_path)
+    if args.skip_cleanup == False:
+        regularized_dt_path_mat_input = os.path.join('..',args.regularized_dt_path)
         outmap_single_mat_input = os.path.join('..',final_path)
         matlab_cleanup(regularized_dt_path_mat_input, outmap_single_mat_input)
 
