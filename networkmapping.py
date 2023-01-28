@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 __doc__ = """This script creates a consensus InfoMap solution. It combines InfoMaps ran on cortical resting state fMRI 
-data, done at multiple sparsity thresholds, in a semi-intelligent way. It then matches the consensus communtiues to the
+data, done at multiple sparsity thresholds, in a semi-intelligent way. It then matches the consensus communities to the
 nearest match on a given template network map.
 """
 
