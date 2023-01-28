@@ -119,8 +119,8 @@ def matlab_cleanup(regularized_dt_path, conensus_communties_path):
     subprocess.call(matlab_call, shell=True)
 
 def main():
-
-    arg_parser = argparse.ArgumentParser()
+    arg_parser = argparse.ArgumentParser(description="""this script creates a consensus InfoMap solution and then performs template matching. 
+                example call: python3 networkmapping.py data/infomap_threshold_maps.dtseries.nii consensusmatchedoutput""")
     if len(sys.argv[1:])==0:
         print('\nArguments required. Use -h option to print FULL usage.\n')
     
@@ -133,11 +133,11 @@ def main():
     arg_parser.add_argument('-t', action='store', default = 'data/Networks_template.dscalar.nii', type=os.path.abspath, required=False,
                             help= '''the path the desired network organizition for template matching, the default path
                             is data/Networks_template.dscalar.nii''', dest = 'net_template_path')
-    arg_parser.add_argument('-nocleanup', action = 'store_true', default = False, required=False,
-                            help = 'use this flag to skip the island removal step, helpful if you dont have matlab', dest = 'skip_cleanup')
     arg_parser.add_argument('-w', action='store', default = 'data/surfaces/92ktemplate.dtseries.nii', type=os.path.abspath,
                             required=False, help='''the path to the same dimension .nii to use as template for saving,
                             default is data/surfaces/92ktemplate.dtseries.nii''', dest = 'wb_required_template_path')
+    arg_parser.add_argument('--nocleanup', action = 'store_true', default = False, required=False,
+                            help = 'use this flag to skip the island removal step, helpful if you dont have matlab', dest = 'skip_cleanup')
     args = arg_parser.parse_args()
 
     final_path = os.path.join(args.output_dir,args.output_name)+'.dtseries.nii'
