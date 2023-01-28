@@ -7,10 +7,8 @@ nearest match on a given template network map.
 
 import os, subprocess, sys, argparse
 import numpy as np
-import matplotlib.pyplot as plt
 
 pwd = os.getcwd()
-matlab_tools_path = ('./matlab_tools')
 
 def load_nii(nii_path, purge = True):
     ''' Load in a .nii file to work with. 
@@ -56,37 +54,31 @@ def sparsest_template_match(regularized_dtseries_cortex, template_cortex, man_ed
 
     out_map_colored_single = np.zeros(91282)
 
-    for i, thr in enumerate(regularized_dtseries_cortex.T[::-1]):    
+    for i, thr in enumerate(regularized_dtseries_cortex.T[::-1]): # Loop through community solutions as different sparsity thresholds
         Idx_missing = np.where(thr < 1)[0]
+        
         for idx in Idx_missing:
             thisassignments = regularized_dtseries_cortex[idx,:]
             nomissing = np.array([x for x in thisassignments if x >=1])
             if nomissing.shape[0]>=1:
                 thr[idx] = nomissing[0]
-        # Loop through infomap community assignments in the current threshold
-        for p in np.arange(1,max(thr)+1):
+        for p in np.arange(1,max(thr)+1): # Loop through community assignments in the current threshold
             if p in thr:
-                # Indicies of the current community assignment
                 A = (thr == p)
                 Idx = np.where(thr == p)[0]
                 D_list = []
-                # Loop through all the networks in a given template
-                for templatenet in np.unique(template_cortex.astype(int)):
-                    # Indicies of the current template network
+
+                for templatenet in np.unique(template_cortex.astype(int)): # Loop through all the networks in a given template
                     B = (template_cortex.astype(int) == templatenet)
-                    networkinds = np.where(template_cortex.astype(int) == templatenet)[0]
-                    # Calculate Dice index/overlap of the corrent community assigntment and the current template network 
-                    D = np.logical_and(A,B).sum()/np.logical_or(A,B).sum()
+                    D = np.logical_and(A,B).sum()/np.logical_or(A,B).sum()  
+                    # Calculate Dice overlap of the current community and current template network 
                     D_list.append(D)
-                # If the dice index of the current community assignemnt is large w.r.t any template network 
-                # Choose the template network with the largest dice index 
-                # Set the final output vertices to be equal to that template network, at the indicies 
-                # of the current community assignment             
-                # D_list[6] = 0
                 potential_matches = np.where(np.array(D_list)>.1)[0]
                 if (len(potential_matches) > 1) and (6 in potential_matches):
+                    # If there are multiple potential matches, and premotor is in this list, set it to 0 for now.
                     D_list[6] = 0
                 if p not in man_edit_array[:,0]:
+                    # If there are no manual edits required, assign the largest overlap >.1 dice to the final output
                     if np.max(D_list) > .1:
                         out_map_colored_single[Idx] = np.argmax(D_list)
                 else:
@@ -114,28 +106,44 @@ def sparsest_template_match(regularized_dtseries_cortex, template_cortex, man_ed
 
     return out_map_colored_single
 
+def matlab_cleanup(regularized_dt_path, conensus_communties_path):
+    '''Calls matlab tools remove_islands.m, requries the orginal path of communty solutions across thresholds,
+    along with the final consensus path'''
+
+    matlab_tools_path = ('./matlab_tools')
+
+    regularized_dt_path_mat_input = f"'{regularized_dt_path}'"
+    conensus_communties_path_mat_input = f"'{conensus_communties_path}'"
+    os.chdir(matlab_tools_path)
+    matlab_call = f""" matlab -nodesktop -nodisplay -nosplash -r "remove_islands({regularized_dt_path_mat_input}, {conensus_communties_path_mat_input});exit" """
+    subprocess.call(matlab_call, shell=True)
+
 def main():
 
     arg_parser = argparse.ArgumentParser()
     if len(sys.argv[1:])==0:
         print('\nArguments required. Use -h option to print FULL usage.\n')
-    arg_parser.add_argument('regularized_dt_path', type=os.path.abspath, 
-                            help='Path to the regularized dt series')
-    arg_parser.add_argument('output_name', type = str, help = 'Naming of output file')
-    arg_parser.add_argument('-output_dir', type = os.path.abspath, required=False, default = 'results', help = 'Naming of output file', dest = 'output_dir')
-    arg_parser.add_argument('-t', action='store', default = 'data/Networks_template.dscalar.nii', type=os.path.abspath,
-                            required=False, help='Path to the network template', dest = 'net_template_path')
-    arg_parser.add_argument('-nocleanup', action = 'store_false', default = True, required=False,
-                            help = 'Skip removal of islands from final consensus map', dest = 'island_cleanup')
+    
+    arg_parser.add_argument('regularized_dt_path', type=os.path.abspath,
+                            help = '''the path to the nii file with multiple community detections solution 
+                            to be fed into the consensus algorithm''')
+    arg_parser.add_argument('output_name', type = str, help = 'the desired name of the output file')
+    arg_parser.add_argument('-output_dir', default = 'results', type = os.path.abspath, required= False,
+                            help = 'the desired output directory, the default value is ./results', dest = 'output_dir')
+    arg_parser.add_argument('-t', action='store', default = 'data/Networks_template.dscalar.nii', type=os.path.abspath, required=False,
+                            help= '''the path the desired network organizition for template matching, the default path
+                            is data/Networks_template.dscalar.nii''', dest = 'net_template_path')
+    arg_parser.add_argument('-nocleanup', action = 'store_true', default = False, required=False,
+                            help = 'use this flag to skip the island removal step, helpful if you dont have matlab', dest = 'skip_cleanup')
     arg_parser.add_argument('-w', action='store', default = 'data/surfaces/92ktemplate.dtseries.nii', type=os.path.abspath,
-                            required=False, help='Path to the same dimension .niii to use as template to overwrite, for saving purposes',
-                            dest = 'wb_required_template_path')
+                            required=False, help='''the path to the same dimension .nii to use as template for saving,
+                            default is data/surfaces/92ktemplate.dtseries.nii''', dest = 'wb_required_template_path')
     args = arg_parser.parse_args()
 
     regularized_dt_path = args.regularized_dt_path
     net_template_path = args.net_template_path
     wb_required_template_path = args.wb_required_template_path
-    island_cleanup = args.island_cleanup
+    skip_cleanup = args.skip_cleanup
     output_name = args.output_name
     output_dir = args.output_dir
 
@@ -147,15 +155,10 @@ def main():
     out_map_colored_single = sparsest_template_match(regularized_dtseries_cortex, template_cortex)
     save_nii(out_map_colored_single, output_name, output_dir, wb_required_template_path)
 
-    if island_cleanup == True:
+    if skip_cleanup == False:
         regularized_dt_path_mat_input = os.path.join('..',regularized_dt_path)
-        regularized_dt_path_mat_input = f"'{regularized_dt_path_mat_input}'"
         outmap_single_mat_input = os.path.join('..',final_path)
-        outmap_single_mat_input = f"'{outmap_single_mat_input}'"
-        os.chdir(matlab_tools_path)
-        matlab_call = f""" matlab -nodesktop -nodisplay -nosplash -r "remove_islands({regularized_dt_path_mat_input}, {outmap_single_mat_input});exit" """
-        subprocess.call(matlab_call, shell=True)
-        # os.chdir('..')
+        matlab_cleanup(regularized_dt_path_mat_input, outmap_single_mat_input)
 
 if __name__ == '__main__':
     sys.exit(main())
