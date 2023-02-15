@@ -47,7 +47,7 @@ def save_nii(array, output_name, output_dir_path, wb_required_template_path, pur
     if purge == True:
         os.remove(out_path)
 
-def sparsest_template_match(regularized_dtseries_cortex, template_cortex, man_edit_array = np.array([[-99,-99]]), 
+def sparsest_template_match(regularized_dtseries_cortex, template_cortex, dthr = .1, man_edit_array = np.array([[-99,-99]]), 
                             force = False):
 
     '''To do: Refactor and add docstring'''
@@ -73,13 +73,13 @@ def sparsest_template_match(regularized_dtseries_cortex, template_cortex, man_ed
                     D = np.logical_and(A,B).sum()/np.logical_or(A,B).sum()  
                     # Calculate Dice overlap of the current community and current template network 
                     D_list.append(D)
-                potential_matches = np.where(np.array(D_list)>.1)[0]
+                potential_matches = np.where(np.array(D_list)>dthr)[0]
                 if (len(potential_matches) > 1) and (6 in potential_matches):
                     # If there are multiple potential matches, and premotor is in this list, set it to 0 for now.
                     D_list[6] = 0
                 if p not in man_edit_array[:,0]:
                     # If there are no manual edits required, assign the largest overlap >.1 dice to the final output
-                    if np.max(D_list) > .1:
+                    if np.max(D_list) > dthr:
                         out_map_colored_single[Idx] = np.argmax(D_list)
                 else:
                     if force == True:    
@@ -87,7 +87,7 @@ def sparsest_template_match(regularized_dtseries_cortex, template_cortex, man_ed
                         man_assignment = man_edit_array[p_row_ind,1]
                         out_map_colored_single[Idx] = man_assignment
                     else:
-                        potential_matches = np.where(np.array(D_list)>.1)[0]
+                        potential_matches = np.where(np.array(D_list)>dthr)[0]
                         if len(potential_matches) == 0:
                             pass
                         elif len(potential_matches) == 1:
@@ -130,6 +130,8 @@ def main():
     arg_parser.add_argument('output_name', type = str, help = 'the desired name of the output file')
     arg_parser.add_argument('-output_dir', default = 'results', type = os.path.abspath, required= False,
                             help = 'the desired output directory, the default value is ./results', dest = 'output_dir')
+    arg_parser.add_argument('-d', default = .1 , type = float, required= False,
+                           help = 'dice threshold, default = .1', dest = 'dthr')
     arg_parser.add_argument('-t', action='store', default = 'data/Networks_template.dscalar.nii', type=os.path.abspath, required=False,
                             help= '''the path the desired network organizition for template matching, the default path
                             is data/Networks_template.dscalar.nii''', dest = 'net_template_path')
@@ -145,7 +147,7 @@ def main():
     regularized_dtseries = load_nii(args.regularized_dt_path)
     template_cortex = net_template_data[0:59412]
     regularized_dtseries_cortex = regularized_dtseries[0:59412,:]
-    out_map_colored_single = sparsest_template_match(regularized_dtseries_cortex, template_cortex)
+    out_map_colored_single = sparsest_template_match(regularized_dtseries_cortex,template_cortex, dthr=args.dthr)
     save_nii(out_map_colored_single, args.output_name, args.output_dir, args.wb_required_template_path)
 
     if args.skip_cleanup == False:
