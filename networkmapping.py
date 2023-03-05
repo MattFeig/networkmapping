@@ -68,7 +68,8 @@ def sparsest_template_match(regularized_dtseries_cortex, template_cortex, dthr =
                 Idx = np.where(thr == p)[0]
                 D_list = []
 
-                for templatenet in np.unique(template_cortex.astype(int)): # Loop through all the networks in a given template
+                # for templatenet in np.unique(template_cortex.astype(int)): # Loop through all the networks in a given template
+                for templatenet in range(17): # Loop through all the networks in a given template    
                     B = (template_cortex.astype(int) == templatenet)
                     D = np.logical_and(A,B).sum()/np.logical_or(A,B).sum()  
                     # Calculate Dice overlap of the current community and current template network 
@@ -132,7 +133,7 @@ def main():
                             help = 'the desired output directory, the default value is ./results', dest = 'output_dir')
     arg_parser.add_argument('-d', default = .1 , type = float, required= False,
                            help = 'dice threshold, default = .1', dest = 'dthr')
-    arg_parser.add_argument('-t', action='store', default = 'data/Networks_template.dscalar.nii', type=os.path.abspath, required=False,
+    arg_parser.add_argument('-t', action='store', default = 'data/Networks_template2.dscalar.nii', type=os.path.abspath, required=False,
                             help= '''the path the desired network organizition for template matching, the default path
                             is data/Networks_template.dscalar.nii''', dest = 'net_template_path')
     arg_parser.add_argument('-w', action='store', default = 'data/surfaces/92ktemplate.dtseries.nii', type=os.path.abspath,
