@@ -133,7 +133,7 @@ def main():
                             help = 'the desired output directory, the default value is ./results', dest = 'output_dir')
     arg_parser.add_argument('-d', default = .1 , type = float, required= False,
                            help = 'dice threshold, default = .1', dest = 'dthr')
-    arg_parser.add_argument('-t', action='store', default = 'data/Networks_template.dscalar.nii', type=os.path.abspath, required=False,
+    arg_parser.add_argument('-t', action='store', default = 'data/Networks_template2.dscalar.nii', type=os.path.abspath, required=False,
                             help= '''the path the desired network organizition for template matching, the default path
                             is data/Networks_template.dscalar.nii''', dest = 'net_template_path')
     arg_parser.add_argument('-w', action='store', default = 'data/surfaces/92ktemplate.dtseries.nii', type=os.path.abspath,
