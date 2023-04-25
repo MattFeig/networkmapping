@@ -10,12 +10,13 @@ import numpy as np
 
 pwd = os.getcwd()
 
-def load_nii(nii_path, purge = True):
-    ''' Load in a .nii file to work with. 
+def load_nii(nii_path, purge=True):
+    '''
+    Load in a .nii file to work with.
     
-    In lieu of a proper package to interface with .nii's in python, 
-    this function, calls workbench to convert the .nii to text, and then
-    uses numpy to load in the text file'''
+    This function converts the .nii to a text file using workbench, and then
+    uses numpy to load in the text file.
+    '''
 
     path_to_wb = '/Applications/workbench/bin_macosx64/wb_command'
 
@@ -24,27 +25,48 @@ def load_nii(nii_path, purge = True):
     wb_comm = ' '.join([path_to_wb, '-cifti-convert -to-text', nii_path, outname])
     subprocess.call(wb_comm, shell=True)
     nii_data = np.loadtxt(outname)
-    if purge == True:
+    
+    if purge:
         os.remove(outname)
+    
     return nii_data
 
 def save_nii(array, output_name, output_dir_path, wb_required_template_path, purge = True):
-    '''Save a numpy array as a .nii file, utilizing workbench as an intermediary
-    Argument: 
-        wb_required_template_path is a dtseries of the same dimension used a template to write over'''
+    '''
+    Save a numpy array as a .nii file, utilizing workbench as an intermediary.
 
+    Arguments:
+        array: the numpy array to save
+        output_name: the name to use for the output file
+        output_dir_path: the directory path to save the output file in
+        wb_required_template_path: a dtseries of the same dimension used as a template to write over
+        purge: if True, delete the intermediate text file after creating the .nii file
+    '''
+
+    # Define the path to workbench
     path_to_wb = '/Applications/workbench/bin_macosx64/wb_command'
     
+    # Check if the output directory exists
     if not os.path.isdir(output_dir_path):
         raise Exception(f"The output folder {output_dir_path} does not exist")
-    out_path = os.path.join(output_dir_path,output_name)
+    
+    # Define the output path and the name for the intermediate .txt file
+    out_path = os.path.join(output_dir_path, output_name)
     outnamecifti = out_path+'.dtseries.nii'
+    
+    # Check if the output file already exists and print a warning if it does
     if os.path.isfile(outnamecifti):
         print('-WARNING: Overwriting')
+    
+    # Save the numpy array as a text file
     np.savetxt(out_path, array)
+    
+    # Use workbench to convert the text file to a .nii file using the provided template
     wb_comm = ' '.join([path_to_wb, '-cifti-convert -from-text', out_path, wb_required_template_path, outnamecifti])
     subprocess.call(wb_comm, shell=True)
-    if purge == True:
+    
+    # Delete the intermediate text file if purge is True
+    if purge:
         os.remove(out_path)
 
 def sparsest_template_match(regularized_dtseries_cortex, template_cortex, dthr = .1, man_edit_array = np.array([[-99,-99]]), 
