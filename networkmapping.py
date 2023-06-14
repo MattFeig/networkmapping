@@ -84,22 +84,22 @@ def sparsest_template_match(regularized_dtseries_cortex, template_cortex, dthr =
             nomissing = np.array([x for x in thisassignments if x >=1])
             if nomissing.shape[0]>=1:
                 thr[idx] = nomissing[0]
-        for p in np.arange(1,max(thr)+1): # Loop through community assignments in the current threshold
+        for p in np.arange(-1,max(thr)+1): # Loop through community assignments in the current threshold
             if p in thr:
                 A = (thr == p)
                 Idx = np.where(thr == p)[0]
                 D_list = []
 
-                # for templatenet in np.unique(template_cortex.astype(int)): # Loop through all the networks in a given template
-                for templatenet in range(17): # Loop through all the networks in a given template    
+                for templatenet in range(18): # Loop through all the networks in a given template and calculate dice overlap   
                     B = (template_cortex.astype(int) == templatenet)
                     D = np.logical_and(A,B).sum()/np.logical_or(A,B).sum()  
-                    # Calculate Dice overlap of the current community and current template network 
                     D_list.append(D)
                 potential_matches = np.where(np.array(D_list)>dthr)[0]
-                if (len(potential_matches) > 1) and (6 in potential_matches):
-                    # If there are multiple potential matches, and premotor is in this list, set it to 0 for now.
-                    D_list[6] = 0
+
+                # if (len(potential_matches) > 1) and (6 in potential_matches):
+                #     # If there are multiple potential matches, and premotor is in this list, set it to 0 for now.
+                #     D_list[6] = 0
+
                 if p not in man_edit_array[:,0]:
                     # If there are no manual edits required, assign the largest overlap >.1 dice to the final output
                     if np.max(D_list) > dthr:
@@ -155,9 +155,9 @@ def main():
                             help = 'the desired output directory, the default value is ./results', dest = 'output_dir')
     arg_parser.add_argument('-d', default = .1 , type = float, required= False,
                            help = 'dice threshold, default = .1', dest = 'dthr')
-    arg_parser.add_argument('-t', action='store', default = 'data/Networks_template2.dscalar.nii', type=os.path.abspath, required=False,
+    arg_parser.add_argument('-t', action='store', default = 'data/Networks_template3.dscalar.nii', type=os.path.abspath, required=False,
                             help= '''the path the desired network organizition for template matching, the default path
-                            is data/Networks_template.dscalar.nii''', dest = 'net_template_path')
+                            is data/Networks_template3.dscalar.nii''', dest = 'net_template_path')
     arg_parser.add_argument('-w', action='store', default = 'data/surfaces/92ktemplate.dtseries.nii', type=os.path.abspath,
                             required=False, help='''the path to the same dimension .nii to use as template for saving,
                             default is data/surfaces/92ktemplate.dtseries.nii''', dest = 'wb_required_template_path')
@@ -169,7 +169,7 @@ def main():
     net_template_data = load_nii(args.net_template_path)
     regularized_dtseries = load_nii(args.regularized_dt_path)
     template_cortex = net_template_data[0:59412]
-    regularized_dtseries_cortex = regularized_dtseries[0:59412,:]
+    regularized_dtseries_cortex = regularized_dtseries[0:59412,0:]
     out_map_colored_single = sparsest_template_match(regularized_dtseries_cortex,template_cortex, dthr=args.dthr)
     save_nii(out_map_colored_single, args.output_name, args.output_dir, args.wb_required_template_path)
 
