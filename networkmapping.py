@@ -179,6 +179,7 @@ def main():
         regularized_dt_path_mat_input = os.path.join('..',args.regularized_dt_path)
         outmap_single_mat_input = os.path.join('..',final_path)
         matlab_cleanup(regularized_dt_path_mat_input, outmap_single_mat_input)
+        os.remove(final_path)
 
 if __name__ == '__main__':
     sys.exit(main())
