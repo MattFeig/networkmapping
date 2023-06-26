@@ -153,7 +153,7 @@ def main():
     arg_parser.add_argument('output_name', type = str, help = 'the desired name of the output file')
     arg_parser.add_argument('-output_dir', default = 'results', type = os.path.abspath, required= False,
                             help = 'the desired output directory, the default value is ./results', dest = 'output_dir')
-    arg_parser.add_argument('-d', default = .15 , type = float, required= False,
+    arg_parser.add_argument('-d', default = .1 , type = float, required= False,
                            help = 'dice threshold, default = .1', dest = 'dthr')
     arg_parser.add_argument('-s', default = 0 , type = int, required= False,
                            help = 'thresholds to skip', dest = 'skip')
