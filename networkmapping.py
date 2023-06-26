@@ -153,8 +153,10 @@ def main():
     arg_parser.add_argument('output_name', type = str, help = 'the desired name of the output file')
     arg_parser.add_argument('-output_dir', default = 'results', type = os.path.abspath, required= False,
                             help = 'the desired output directory, the default value is ./results', dest = 'output_dir')
-    arg_parser.add_argument('-d', default = .1 , type = float, required= False,
+    arg_parser.add_argument('-d', default = .15 , type = float, required= False,
                            help = 'dice threshold, default = .1', dest = 'dthr')
+    arg_parser.add_argument('-s', default = 0 , type = int, required= False,
+                           help = 'thresholds to skip', dest = 'skip')
     arg_parser.add_argument('-t', action='store', default = 'data/Networks_template3.dscalar.nii', type=os.path.abspath, required=False,
                             help= '''the path the desired network organizition for template matching, the default path
                             is data/Networks_template3.dscalar.nii''', dest = 'net_template_path')
@@ -169,7 +171,7 @@ def main():
     net_template_data = load_nii(args.net_template_path)
     regularized_dtseries = load_nii(args.regularized_dt_path)
     template_cortex = net_template_data[0:59412]
-    regularized_dtseries_cortex = regularized_dtseries[0:59412,0:]
+    regularized_dtseries_cortex = regularized_dtseries[0:59412, args.skip:]
     out_map_colored_single = sparsest_template_match(regularized_dtseries_cortex,template_cortex, dthr=args.dthr)
     save_nii(out_map_colored_single, args.output_name, args.output_dir, args.wb_required_template_path)
 
