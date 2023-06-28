@@ -84,13 +84,15 @@ def sparsest_template_match(regularized_dtseries_cortex, template_cortex, dthr =
             nomissing = np.array([x for x in thisassignments if x >=1])
             if nomissing.shape[0]>=1:
                 thr[idx] = nomissing[0]
+
         for p in np.arange(-1,max(thr)+1): # Loop through community assignments in the current threshold
             if p in thr:
                 A = (thr == p)
                 Idx = np.where(thr == p)[0]
                 D_list = []
 
-                for templatenet in range(18): # Loop through all the networks in a given template and calculate dice overlap   
+                net_colors = range(1,18)
+                for templatenet in net_colors: # Loop through all the networks in a given template and calculate dice overlap   
                     B = (template_cortex.astype(int) == templatenet)
                     D = np.logical_and(A,B).sum()/np.logical_or(A,B).sum()  
                     D_list.append(D)
@@ -103,7 +105,7 @@ def sparsest_template_match(regularized_dtseries_cortex, template_cortex, dthr =
                 if p not in man_edit_array[:,0]:
                     # If there are no manual edits required, assign the largest overlap >.1 dice to the final output
                     if np.max(D_list) > dthr:
-                        out_map_colored_single[Idx] = np.argmax(D_list)
+                        out_map_colored_single[Idx] = net_colors[np.argmax(D_list)]
                 else:
                     if force == True:    
                         p_row_ind = np.where(man_edit_array[:,0]==p)[0][0]
