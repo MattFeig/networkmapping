@@ -77,13 +77,14 @@ def sparsest_template_match(regularized_dtseries_cortex, template_cortex, dthr =
     out_map_colored_single = np.zeros(91282)
 
     for i, thr in enumerate(regularized_dtseries_cortex.T[::-1]): # Loop through community solutions as different sparsity thresholds
-        Idx_missing = np.where(thr < 1)[0]
         
-        for idx in Idx_missing:
-            thisassignments = regularized_dtseries_cortex[idx,:]
-            nomissing = np.array([x for x in thisassignments if x >=1])
-            if nomissing.shape[0]>=1:
-                thr[idx] = nomissing[0]
+        # Idx_missing = np.where(thr < 1)[0]
+        
+        # for idx in Idx_missing:
+        #     thisassignments = regularized_dtseries_cortex[idx,:]
+        #     nomissing = np.array([x for x in thisassignments if x >=1])
+        #     if nomissing.shape[0]>=1:
+        #         thr[idx] = nomissing[0]
 
         for p in np.arange(-1,max(thr)+1): # Loop through community assignments in the current threshold
             if p in thr:
