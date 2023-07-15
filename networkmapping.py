@@ -70,7 +70,7 @@ def save_nii(array, output_name, output_dir_path, wb_required_template_path, pur
         os.remove(out_path)
 
 def sparsest_template_match(regularized_dtseries_cortex, template_cortex, dthr = .1, man_edit_array = np.array([[-99,-99]]), 
-                            force = False):
+                            force = True):
 
     '''To do: Refactor and add docstring'''
 
@@ -78,13 +78,13 @@ def sparsest_template_match(regularized_dtseries_cortex, template_cortex, dthr =
 
     for i, thr in enumerate(regularized_dtseries_cortex.T[::-1]): # Loop through community solutions as different sparsity thresholds
         
-        # Idx_missing = np.where(thr < 1)[0]
+        Idx_missing = np.where(thr < 1)[0]
         
-        # for idx in Idx_missing:
-        #     thisassignments = regularized_dtseries_cortex[idx,:]
-        #     nomissing = np.array([x for x in thisassignments if x >=1])
-        #     if nomissing.shape[0]>=1:
-        #         thr[idx] = nomissing[0]
+        for idx in Idx_missing:
+            thisassignments = regularized_dtseries_cortex[idx,:]
+            nomissing = np.array([x for x in thisassignments if x >=1])
+            if nomissing.shape[0]>=1:
+                thr[idx] = nomissing[0]
 
         for p in np.arange(-1,max(thr)+1): # Loop through community assignments in the current threshold
             if p in thr:
@@ -99,10 +99,6 @@ def sparsest_template_match(regularized_dtseries_cortex, template_cortex, dthr =
                     D_list.append(D)
                 potential_matches = np.where(np.array(D_list)>dthr)[0]
 
-                # if (len(potential_matches) > 1) and (6 in potential_matches):
-                #     # If there are multiple potential matches, and premotor is in this list, set it to 0 for now.
-                #     D_list[6] = 0
-
                 if p not in man_edit_array[:,0]:
                     # If there are no manual edits required, assign the largest overlap >.1 to the final output
                     if np.max(D_list) > dthr:
@@ -113,22 +109,25 @@ def sparsest_template_match(regularized_dtseries_cortex, template_cortex, dthr =
                         man_assignment = man_edit_array[p_row_ind,1]
                         out_map_colored_single[Idx] = man_assignment
                     else:
-                        potential_matches = np.where(np.array(D_list)>dthr)[0]
-                        if len(potential_matches) == 0:
-                            pass
-                        elif len(potential_matches) == 1:
-                            out_map_colored_single[Idx] = potential_matches[0]
-                            print(potential_matches[0] == np.argmax(D_list))
-                        elif len(potential_matches) > 1:
-                            p_row_ind = np.where(man_edit_array[:,0]==p)[0][0]
-                            man_assignment = man_edit_array[p_row_ind,1]
-                            if man_assignment in potential_matches:
-                                out_map_colored_single[Idx] = man_assignment
-                            else:
-                                out_map_colored_single[Idx] = np.argmax(D_list)
-                                print(np.argmax(D_list) in potential_matches)
-                        else: 
-                            print("error")
+                        pass
+                        # Update code block below
+                        
+                        # potential_matches = np.where(np.array(D_list)>dthr)[0]
+                        # if len(potential_matches) == 0:
+                        #     pass
+                        # elif len(potential_matches) == 1:
+                        #     out_map_colored_single[Idx] = potential_matches[0]
+                        #     print(potential_matches[0] == np.argmax(D_list))
+                        # elif len(potential_matches) > 1:
+                        #     p_row_ind = np.where(man_edit_array[:,0]==p)[0][0]
+                        #     man_assignment = man_edit_array[p_row_ind,1]
+                        #     if man_assignment in potential_matches:
+                        #         out_map_colored_single[Idx] = man_assignment
+                        #     else:
+                        #         out_map_colored_single[Idx] = np.argmax(D_list)
+                        #         print(np.argmax(D_list) in potential_matches)
+                        # else: 
+                        #     print("error")
 
     return out_map_colored_single
 
