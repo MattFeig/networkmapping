@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 __doc__ = """This script creates a consensus InfoMap solution. It combines InfoMaps ran on cortical resting state fMRI 
-data, done at multiple sparsity thresholds, in a semi-intelligent way. It then matches the consensus communities to the
+data, done at multiple sparsity thresholds. It then matches the consensus communities to the
 nearest match on a given template network map.
 """
 
@@ -93,7 +93,7 @@ def sparsest_template_match(regularized_dtseries_cortex, template_cortex, dthr =
                 D_list = []
 
                 net_colors = range(1,18)
-                for templatenet in net_colors: # Loop through all the networks in a given template and calculate dice overlap   
+                for templatenet in net_colors: # Loop through all the networks in a given template and calculate overlap   
                     B = (template_cortex.astype(int) == templatenet)
                     D = np.logical_and(A,B).sum()/np.logical_or(A,B).sum()  
                     D_list.append(D)
@@ -104,7 +104,7 @@ def sparsest_template_match(regularized_dtseries_cortex, template_cortex, dthr =
                 #     D_list[6] = 0
 
                 if p not in man_edit_array[:,0]:
-                    # If there are no manual edits required, assign the largest overlap >.1 dice to the final output
+                    # If there are no manual edits required, assign the largest overlap >.1 to the final output
                     if np.max(D_list) > dthr:
                         out_map_colored_single[Idx] = net_colors[np.argmax(D_list)]
                 else:
@@ -157,7 +157,7 @@ def main():
     arg_parser.add_argument('-output_dir', default = 'results', type = os.path.abspath, required= False,
                             help = 'the desired output directory, the default value is ./results', dest = 'output_dir')
     arg_parser.add_argument('-d', default = .1 , type = float, required= False,
-                           help = 'dice threshold, default = .1', dest = 'dthr')
+                           help = 'overlap threshold, default = .1', dest = 'dthr')
     arg_parser.add_argument('-s', default = 0 , type = int, required= False,
                            help = 'thresholds to skip', dest = 'skip')
     arg_parser.add_argument('-t', action='store', default = 'data/Networks_template3.dscalar.nii', type=os.path.abspath, required=False,
