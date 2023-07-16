@@ -97,10 +97,12 @@ def sparsest_template_match(regularized_dtseries_cortex, template_cortex, dthr =
                     B = (template_cortex.astype(int) == templatenet)
                     D = np.logical_and(A,B).sum()/np.logical_or(A,B).sum()  
                     D_list.append(D)
+
                 potential_matches = np.where(np.array(D_list)>dthr)[0]
+                D_list[12] = max(0,D_list[12] - .05) # Require higher threshold to match Noise / MTL network
 
                 if p not in man_edit_array[:,0]:
-                    # If there are no manual edits required, assign the largest overlap >.1 to the final output
+                    # If there are no manual edits required, assign the largest overlap, over threshold, to the final output
                     if np.max(D_list) > dthr:
                         out_map_colored_single[Idx] = net_colors[np.argmax(D_list)]
                 else:
