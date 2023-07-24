@@ -15,19 +15,19 @@ def main():
     
     for sub1 in from_list:
 
-        sub1_communitites_path = '/Users/matt/workspace/code/code_projects/child_networks/data/communities_data/mscpi_regularized/sub-{sub1}_CONCAT_6.0mm_SMOOTHED_0.2FD_rawassn_minsize10_regularized.dtseries.nii'
+        sub1_communitites_path = f'/Users/matt/workspace/code/code_projects/child_networks/data/communities_data/mscpi_regularized/sub-{sub1}_CONCAT_6.0mm_SMOOTHED_0.2FD_rawassn_minsize10_regularized.dtseries.nii'
         if os.path.exists(sub1_communitites_path):
              pass
-        else: sub1_communitites_path = '/Users/matt/workspace/code/code_projects/child_networks/data/communities_data/msc_regularized/sub-{sub1}_CONCAT_6.0mm_SMOOTHED_0.2FD_rawassn_minsize10_regularized.dtseries.nii'
+        else: sub1_communitites_path = f'/Users/matt/workspace/code/code_projects/child_networks/data/communities_data/msc_regularized/sub-{sub1}_CONCAT_6.0mm_SMOOTHED_0.2FD_rawassn_minsize10_regularized.dtseries.nii'
 
         for sub2 in to_list:
 
             outname = f'{sub1}_to_{sub2}'
 
-            sub2_template_path = '/Users/matt/workspace/code/code_projects/child_networks/data/point_one_networks/MSCPI_results/abcd_template/{sub2}_island_getaway.dscalar.nii'
+            sub2_template_path = f'/Users/matt/workspace/code/code_projects/child_networks/data/point_one_networks/MSCPI_results/abcd_template/{sub2}_island_getaway.dscalar.nii'
             if os.path.exists(sub2_template_path):
                 pass
-            else: sub2_template_path = '/Users/matt/workspace/code/code_projects/child_networks/data/point_one_networks/MSC_results/template3/{sub2}_island_getaway.dscalar.nii'
+            else: sub2_template_path = f'/Users/matt/workspace/code/code_projects/child_networks/data/point_one_networks/MSC_results/template3/{sub2}_island_getaway.dscalar.nii'
 
             run_command=f'python3 overlap_manipulation.py {sub1_communitites_path} {outname} -output_dir {output_dir} -t {sub2_template_path}'
             print(f'Running command: {run_command} \n')
