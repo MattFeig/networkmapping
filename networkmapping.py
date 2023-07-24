@@ -72,8 +72,6 @@ def save_nii(array, output_name, output_dir_path, wb_required_template_path, pur
 def sparsest_template_match(regularized_dtseries_cortex, template_cortex, dthr = .1, man_edit_array = np.array([[-99,-99]]), 
                             force = True):
 
-    '''To do: Refactor and add docstring'''
-
     out_map_colored_single = np.zeros(91282)
 
     for i, thr in enumerate(regularized_dtseries_cortex.T[::-1]): # Loop through community solutions as different sparsity thresholds
