@@ -135,7 +135,8 @@ def matlab_cleanup(regularized_dt_path, conensus_communties_path):
     '''Calls matlab tools remove_islands.m, requries the orginal path of communty solutions across thresholds,
     along with the final consensus path'''
 
-    matlab_tools_path = ('./matlab_tools')
+    # matlab_tools_path = ('./matlab_tools')
+    matlab_tools_path = ('/Users/matt/workspace/code/code_projects/networkmapping/matlab_tools')
 
     regularized_dt_path_mat_input = f"'{regularized_dt_path}'"
     conensus_communties_path_mat_input = f"'{conensus_communties_path}'"
@@ -162,7 +163,7 @@ def main():
     arg_parser.add_argument('-t', action='store', default = 'data/Networks_template3.dscalar.nii', type=os.path.abspath, required=False,
                             help= '''the path the desired network organizition for template matching, the default path
                             is data/Networks_template3.dscalar.nii''', dest = 'net_template_path')
-    arg_parser.add_argument('-w', action='store', default = 'data/surfaces/92ktemplate.dtseries.nii', type=os.path.abspath,
+    arg_parser.add_argument('-w', action='store', default = '/Users/matt/workspace/code/code_projects/networkmapping/data/surfaces/92ktemplate.dtseries.nii', type=os.path.abspath,
                             required=False, help='''the path to the same dimension .nii to use as template for saving,
                             default is data/surfaces/92ktemplate.dtseries.nii''', dest = 'wb_required_template_path')
     arg_parser.add_argument('--nocleanup', action = 'store_true', default = False, required=False,
