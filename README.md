@@ -1,8 +1,5 @@
 # networkmapping
 
-networkmapping.py: python inmplemention of consensus and template matching to identify brain networks. 1. Combines InfoMap community solutions identified at multiple sparsity thresholds. 2. Matches the consensus communities to the nearest functional network on a given template network map.
-
-
 networkmapping.py: A Python implementation employing consensus and template matching algorithms for identifying brain networks.
 
 1. Integrates InfoMap community solutions, identified across a range of sparsity thresholds, to create a consensus mapping.
