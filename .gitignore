@@ -1,8 +1,10 @@
 batch.sh
 cn_analysis/
+others/
 batch_overlap_p2p.py
 overlap_manipulation.py
 explore_comm.py
+matlab_tools/
 
 .vscode
 .DS_Store
