@@ -109,9 +109,7 @@ def sparsest_template_match(regularized_dtseries_cortex, template_cortex, dthr =
                         man_assignment = man_edit_array[p_row_ind,1]
                         out_map_colored_single[Idx] = man_assignment
                     else:
-                        pass
-                        # Update code block below
-                        
+                        pass                        
                         # potential_matches = np.where(np.array(D_list)>dthr)[0]
                         # if len(potential_matches) == 0:
                         #     pass
