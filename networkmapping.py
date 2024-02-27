@@ -110,23 +110,6 @@ def sparsest_template_match(regularized_dtseries_cortex, template_cortex, dthr =
                         out_map_colored_single[Idx] = man_assignment
                     else:
                         pass                        
-                        # potential_matches = np.where(np.array(D_list)>dthr)[0]
-                        # if len(potential_matches) == 0:
-                        #     pass
-                        # elif len(potential_matches) == 1:
-                        #     out_map_colored_single[Idx] = potential_matches[0]
-                        #     print(potential_matches[0] == np.argmax(D_list))
-                        # elif len(potential_matches) > 1:
-                        #     p_row_ind = np.where(man_edit_array[:,0]==p)[0][0]
-                        #     man_assignment = man_edit_array[p_row_ind,1]
-                        #     if man_assignment in potential_matches:
-                        #         out_map_colored_single[Idx] = man_assignment
-                        #     else:
-                        #         out_map_colored_single[Idx] = np.argmax(D_list)
-                        #         print(np.argmax(D_list) in potential_matches)
-                        # else: 
-                        #     print("error")
-
     return out_map_colored_single
 
 def matlab_cleanup(regularized_dt_path, conensus_communties_path):
